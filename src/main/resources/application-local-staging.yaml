@@ -1,0 +1,66 @@
+fint:
+  org-id: fintlabs.no
+  application-id: fint-kontroll-template
+  kontroll:
+    opa:
+      url: http://localhost:8181/v1/data/accessmanagement
+    authorization:
+      authorized-role: https://role-catalog.vigoiks.no/vigo/kontroll/user
+      authorized-org-id: vigo.no
+
+novari:
+  cache:
+    defaultCacheEntryTimeToLive: "20000ms"
+    defaultCacheHeapSize: 10000
+
+  kafka:
+    default-replicas: 1
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${fint.application-id}
+    topic:
+      org-id: fintlabs-no
+      domain-context: kontroll
+    application-id: fint-kontroll-template
+
+
+spring:
+  application:
+    name: fint-kontroll-template
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: postgres
+#    password: postgres
+#    hikari:
+#      schema: device
+  kafka:
+    consumer:
+      group-id: fint-kontroll-device-catalog
+#  jpa:
+#    hibernate:
+#      ddl-auto: none
+#    properties:
+#      hibernate:
+#        default_schema: device
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://idp.felleskomponent.no/nidp/oauth/nam
+
+#  flyway:
+#    enabled: true
+#    locations: classpath:db/migration
+
+server:
+  port: 8182
+logging:
+  level:
+    root: INFO
+    org.apache.kafka.clients: WARN
+    org.apache.kafka.common: WARN
+    org.apache.kafka.clients.consumer: WARN
+    org.apache.kafka.clients.producer: WARN
+    org.springframework.kafka: WARN
+    no.novari.kafka: WARN
+    no.novari.cache.ehcache.FintEhCacheEventLogger: WARN

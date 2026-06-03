@@ -1,0 +1,39 @@
+apiVersion: fintlabs.no/v1alpha1
+kind: Application
+metadata:
+  name: fint-kontroll-device-catalog
+  namespace: fintlabs-no
+spec:
+  orgId: fintlabs.no
+  image: ghcr.io/fintlabs/fint-kontroll-device-catalog:latest
+  imagePullPolicy: Always
+  url:
+    hostname: kontroll.vigo.no
+    basePath: /beta/fintlabs-no
+  ingress:
+    enabled: true
+    basePath: /beta/fintlabs-no/api
+    middlewares:
+      - fint-kontroll-sso
+  kafka:
+    enabled: true
+    acls:
+      - topic: 'fintlabs-no.kontroll.*'
+        permission: read
+      - topic: 'fintlabs-no.kontroll.*'
+        permission: admin
+  database:
+    database: fint-kontroll
+  env:
+    - name: fint.kontroll.authorization.authorized-role
+      value: "https://role-catalog.vigoiks.no/vigo/kontroll/user"
+    - name: fint.kontroll.authorization.authorized-org-id
+      value: "vigo.no"
+    - name: spring.kafka.consumer.group-id
+      value: 'fint-kontroll-device-catalog'
+
+  observability:
+    metrics:
+      enabled: true
+      port: "8080"
+      path: '/beta/fintlabs-no/actuator/prometheus'

@@ -1,0 +1,47 @@
+fint:
+  org-id: fintlabs.no
+  application-id: fint-kontroll-template
+  kontroll:
+    opa:
+      url: http://fint-kontroll-opa:8181/v1/data/accessmanagement
+    authorization:
+      authorized-role: https://role-catalog.vigoiks.no/vigo/kontroll/user
+      authorized-org-id: vigo.no
+
+novari:
+  cache:
+    defaultCacheEntryTimeToLive: "20000ms"
+    defaultCacheHeapSize: 10000
+
+  kafka:
+    topic:
+      org-id: fintlabs-no                 # TODO: MÅ BORT NÅR DEN REGISTRERES I KUSTOMIZE OVERLAY
+      domain-context: kontroll
+    application-id: fintlabs.no
+    default-replicas: 1
+
+spring:
+  application:
+    name: fint-kontroll-device-catalog
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://idp.felleskomponent.no/nidp/oauth/nam
+#  flyway:
+#    enabled: true
+#    locations: classpath:db/migration
+  profiles:
+    include:
+      - observability
+logging:
+  level:
+    root: INFO
+    org.apache.kafka.clients: WARN
+    org.apache.kafka.common: WARN
+    org.apache.kafka.clients.consumer: WARN
+    org.apache.kafka.clients.producer: WARN
+    org.springframework.kafka: WARN
+    no.novari.kafka: WARN
+    no.novari.cache.ehcache.FintEhCacheEventLogger: WARN
+
