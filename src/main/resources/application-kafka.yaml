@@ -1,0 +1,16 @@
+novari:
+  kafka:
+    default-replicas: 1
+    topic:
+      org-id: fintlabs-no
+      domain-context: kontroll
+    application-id: ${fint.application-id}
+
+spring:
+  kafka:
+    consumer:
+      group-id: ${fint.application-id}
+    producer:
+      max:
+        request:
+          size: 2097152
