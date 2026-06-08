@@ -1,4 +1,4 @@
-package no.novari.no.novari.kontroll.fint.gateway
+package no.novari.kontroll.fint.gateway
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.core.type.TypeReference

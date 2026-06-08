@@ -1,6 +1,5 @@
 package no.novari.kontroll.fint.gateway
 
-import no.novari.no.novari.kontroll.fint.gateway.ObjectResources
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
