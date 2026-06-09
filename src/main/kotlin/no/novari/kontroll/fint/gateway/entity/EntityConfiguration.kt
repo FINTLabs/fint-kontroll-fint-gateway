@@ -1,10 +1,11 @@
 package no.novari.kontroll.fint.gateway.entity
 
-import jdk.jfr.Enabled
+import org.springframework.boot.context.properties.ConfigurationProperties
 
+@ConfigurationProperties(prefix = "fint.kontroll.resource-gateway.resources.entity")
 data class EntityConfiguration(
-    val enabled: Boolean,
-    val refresh: EntityRefreshConfiguration,
-    val pull: EntityPullConfiguration,
-    val entityPipelines: List<EntityPipelineConfiguration>,
+    val enabled: Boolean = false,
+    val refresh: EntityRefreshConfiguration = EntityRefreshConfiguration(),
+    val pull: EntityPullConfiguration = EntityPullConfiguration(),
+    val entityPipelines: List<EntityPipelineConfiguration> = emptyList(),
 )

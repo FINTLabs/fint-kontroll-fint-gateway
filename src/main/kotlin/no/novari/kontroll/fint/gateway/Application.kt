@@ -6,7 +6,7 @@ import org.springframework.boot.runApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableScheduling
-@ConfigurationPropertiesScan
+@ConfigurationPropertiesScan(basePackages = ["no.novari.kontroll.fint.gateway"])
 @SpringBootApplication(
     scanBasePackages = ["no.novari", "no.fintlabs"],
 )
