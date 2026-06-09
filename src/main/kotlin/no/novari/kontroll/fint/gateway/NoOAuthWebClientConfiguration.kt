@@ -10,15 +10,14 @@ import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.web.client.RestClient
 import java.net.http.HttpClient
 import java.time.Duration
-import kotlin.jvm.java
 
 private val logger = LoggerFactory.getLogger(NoOAuthWebClientConfiguration::class.java)
 
 @Configuration
 @ConditionalOnProperty(name = ["fint.kontroll.datainput"], havingValue = "mock")
-@ConfigurationProperties("fint.client")
+@ConfigurationProperties(prefix = "fint.client")
 class NoOAuthWebClientConfiguration {
-    val baseUrl: String? = null
+    lateinit var baseUrl: String
 
     @Bean
     fun clientHttpRequestFactory(): ClientHttpRequestFactory {
@@ -42,7 +41,7 @@ class NoOAuthWebClientConfiguration {
         val restClient =
             builder
                 .requestFactory(clientHttpRequestFactory)
-                .baseUrl(baseUrl!!)
+                .baseUrl(baseUrl)
                 .build()
         logger.info("simple restclient without authentication created")
 

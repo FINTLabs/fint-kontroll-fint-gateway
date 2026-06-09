@@ -32,8 +32,8 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.13")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    // implementation("io.github.oshai:kotlin-logging-jvm:7.0.13")
+    // implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
 
     implementation("no.novari:kafka:6.0.0")

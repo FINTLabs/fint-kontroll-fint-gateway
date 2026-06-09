@@ -2,16 +2,51 @@ fint:
   org-id: fintlabs.no
   application-id: fint-kontroll-fint-gateway
   kontroll:
-    opa:
-      url: http://fint-kontroll-opa:8181/v1/data/accessmanagement
-    authorization:
-      authorized-role: https://role-catalog.vigoiks.no/vigo/kontroll/user
-      authorized-org-id: vigo.no
+      datainput: mock #fint
+      resource-gateway:
+          resources:
+              entity:
+                  enabled: true
+                  refresh:
+                      interval-ms: 518400000
+                      topic-retention-time-offset-ms: 86400000
+                  pull:
+                      initial-delay-ms: 5000
+                      fixed-delay-ms: 900000
+                  entity-pipelines:
+                      -   resource-reference: administrasjon.personal.personalressurs
+                          self-link-key-filter: ansattnummer
+                      -   resource-reference: administrasjon.personal.person
+                          self-link-key-filter: fodselsnummer
+                      -   resourceReference: administrasjon.personal.arbeidsforhold
+                      -   resourceReference: administrasjon.organisasjon.organisasjonselement
+                          self-link-key-filter: organisasjonsid
+                      -   resource-reference: utdanning.elev.person
+                          self-link-key-filter: fodselsnummer
+                      -   resource-reference: utdanning.elev.elev
+                      -   resource-reference: utdanning.elev.elevforhold
+                      -   resource-reference: utdanning.elev.skoleressurs
+                          self-link-key-filter: systemid
+                      -   resource-reference: utdanning.utdanningsprogram.skole
+                          self-link-key-filter: systemid
+                      -   resource-reference: utdanning.timeplan.undervisningsgruppe
+                          self-link-key-filter: systemid
+                      -   resource-reference: utdanning.timeplan.undervisningsgruppemedlemskap
+                          self-link-key-filter: systemid
+                      -   resource-reference: eiendeler.applikasjon.applikasjon
+                      -   resource-reference: eiendeler.applikasjon.lisens
+                      -   resource-reference: eiendeler.applikasjon.lisenstilgang
+                      -   resource-reference: eiendeler.kodeverk.brukertype
+                      -   resource-reference: eiendeler.kodeverk.lisensmodell
+                      -   resource-reference: eiendeler.kodeverk.applikasjonskategori
+                      -   resource-reference: ressurs.kodeverk.plattform
+                      -   resource-reference: ressurs.kodeverk.status
+                      -   resource-reference: ressurs.kodeverk.enhetstype
+                      -   resource-reference: ressurs.datautstyr.digitalenhet
+                      -   resource-reference: ressurs.datautstyr.enhetsgruppe
+                      -   resource-reference: ressurs.datautstyr.enhetsgruppemedlemskap
 
-novari:
-  cache:
-    defaultCacheEntryTimeToLive: "20000ms"
-    defaultCacheHeapSize: 10000
+          authorization: disabled #enabled
 
 
 spring:

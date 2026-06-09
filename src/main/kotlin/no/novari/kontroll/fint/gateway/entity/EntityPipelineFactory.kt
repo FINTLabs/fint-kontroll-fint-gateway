@@ -7,7 +7,11 @@ import org.springframework.stereotype.Service
 @Service
 class EntityPipelineFactory {
     fun create(entityPipelineConfiguration: EntityPipelineConfiguration): EntityPipeline {
-        val resourceName: String = entityPipelineConfiguration.resourceReference.replace(" ", "-")
+        val resourceName: String =
+            entityPipelineConfiguration.resourceReference
+                .replace(".", "-")
+                .replace(" ", "-")
+                .lowercase()
 
         val topicNameParameters: EntityTopicNameParameters =
             EntityTopicNameParameters

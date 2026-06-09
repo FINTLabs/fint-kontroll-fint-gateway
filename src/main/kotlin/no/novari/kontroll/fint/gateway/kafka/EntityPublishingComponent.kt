@@ -107,7 +107,6 @@ class EntityPublishingComponent(
             emptyList()
         }
 
-    // TODO: 19/11/2021 Handle exceptions, casting and no systemid
     @Suppress("UNCHECKED_CAST")
     private fun getKey(
         resource: HashMap<String, Any>,
