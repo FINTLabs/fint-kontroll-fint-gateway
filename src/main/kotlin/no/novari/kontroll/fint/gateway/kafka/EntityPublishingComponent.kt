@@ -1,8 +1,5 @@
 package no.novari.kontroll.fint.gateway.kafka
 
-import no.novari.kafka.producing.ParameterizedProducerRecord
-import no.novari.kafka.producing.ParameterizedTemplate
-import no.novari.kafka.producing.ParameterizedTemplateFactory
 import no.novari.kafka.topic.EntityTopicService
 import no.novari.kafka.topic.configuration.EntityCleanupFrequency
 import no.novari.kafka.topic.configuration.EntityTopicConfiguration
@@ -26,14 +23,11 @@ import java.time.Duration
 )
 class EntityPublishingComponent(
     entityTopicService: EntityTopicService,
-    parameterizedTemplateFactory: ParameterizedTemplateFactory,
     entityConfiguration: EntityConfiguration,
     entityPipelineFactory: EntityPipelineFactory,
+    private val entityResourcePublisher: EntityResourcePublisher,
     private val fintClient: FintClient,
 ) {
-    private val parameterizedTemplate: ParameterizedTemplate<Any> =
-        parameterizedTemplateFactory.createTemplate(Any::class.java)
-
     private val entityPipelines: List<EntityPipeline> =
         createEntityPipelines(
             entityPipelineFactory,
@@ -79,24 +73,14 @@ class EntityPublishingComponent(
     fun pullUpdatedEntityResources(entityPipeline: EntityPipeline) {
         val resources = getUpdatedResources(entityPipeline.fintEndpoint)
 
-        resources.forEach { resource ->
-            val key = getKey(resource, entityPipeline.selfLinkKeyFilter)
-
-            parameterizedTemplate.send(
-                ParameterizedProducerRecord
-                    .builder<Any>()
-                    .topicNameParameters(entityPipeline.topicNameParameters)
-                    .key(key)
-                    .value(resource)
-                    .build(),
-            )
-        }
+        entityResourcePublisher.publish(entityPipeline, resources)
 
         log.info(
             "${resources.size} entities sent to ${entityPipeline.topicNameParameters.resourceName}",
         )
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun getUpdatedResources(endpointUrl: String): List<HashMap<String, Any>> =
         try {
             fintClient
@@ -106,26 +90,6 @@ class EntityPublishingComponent(
             log.error("Could not pull entities from endpoint=$endpointUrl", e)
             emptyList()
         }
-
-    // @Suppress("UNCHECKED_CAST")
-    fun getKey(
-        resource: HashMap<String, Any>,
-        selfLinkKeyFilter: String,
-    ): String {
-        val links = resource["_links"] as HashMap<String, Any>
-        val selfLinks = links["self"] as List<HashMap<String, String>>
-
-        return selfLinks
-            .asSequence()
-            .filter { it.containsKey("href") }
-            .mapNotNull { it["href"] }
-            .map { it.replaceFirst("^https:/\\/.+\\.felleskomponent.no".toRegex(), "") }
-            .filter { it.lowercase().contains(selfLinkKeyFilter) }
-            .minOrNull()
-            ?: throw IllegalStateException(
-                "No $selfLinkKeyFilter to generate key for resource=$resource",
-            )
-    }
 
     companion object {
         private val log = LoggerFactory.getLogger(EntityPublishingComponent::class.java)
