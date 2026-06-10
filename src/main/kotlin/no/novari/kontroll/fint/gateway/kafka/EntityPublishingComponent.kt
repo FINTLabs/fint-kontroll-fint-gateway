@@ -61,7 +61,7 @@ class EntityPublishingComponent(
     ): List<EntityPipeline> = configs.map(entityPipelineFactory::create)
 
     @Scheduled(fixedRateString = "\${fint.kontroll.resource-gateway.resources.entity.refresh.interval-ms}")
-    private fun resetLastUpdatedTimestamps() {
+    fun resetLastUpdatedTimestamps() {
         log.warn("Resetting resource last updated timestamps")
         fintClient.resetLastUpdatedTimestamps()
     }
@@ -70,13 +70,13 @@ class EntityPublishingComponent(
         initialDelayString = "\${fint.kontroll.resource-gateway.resources.entity.pull.initial-delay-ms}",
         fixedDelayString = "\${fint.kontroll.resource-gateway.resources.entity.pull.fixed-delay-ms}",
     )
-    private fun pullAllUpdatedEntityResources() {
+    fun pullAllUpdatedEntityResources() {
         log.info("Starting pulling resources")
         entityPipelines.forEach(::pullUpdatedEntityResources)
         log.info("Completed pulling resources")
     }
 
-    private fun pullUpdatedEntityResources(entityPipeline: EntityPipeline) {
+    fun pullUpdatedEntityResources(entityPipeline: EntityPipeline) {
         val resources = getUpdatedResources(entityPipeline.fintEndpoint)
 
         resources.forEach { resource ->
@@ -107,8 +107,8 @@ class EntityPublishingComponent(
             emptyList()
         }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun getKey(
+    // @Suppress("UNCHECKED_CAST")
+    fun getKey(
         resource: HashMap<String, Any>,
         selfLinkKeyFilter: String,
     ): String {
