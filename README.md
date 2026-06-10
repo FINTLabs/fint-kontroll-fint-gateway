@@ -1,4 +1,4 @@
-# FINT Kontroll FINT Gateway Documentation
+# FINT Kontroll FINT Gateway
 
 ## Purpose
 
@@ -14,16 +14,15 @@ The application is a Spring Boot service written in Kotlin. Its main runtime res
 
 ## Main Components
 
-| Component | Responsibility |
-| --- | --- |
-| `Application` | Starts Spring Boot, enables scheduling, scans configuration properties, and scans `no.novari` and `no.fintlabs` beans. |
-| `OAuthRestClientConfiguration` | Creates a `RestClient` for real FINT access when `fint.kontroll.datainput=fint`. Optionally attaches an OAuth2 interceptor. |
-| `NoOAuthWebClientConfiguration` | Creates a plain `RestClient` for mock/local access when `fint.kontroll.datainput=mock`. |
-| `FintClient` | Wraps FINT HTTP calls and tracks `sinceTimeStamp` per endpoint. |
-| `ObjectResources` | Generic deserialization wrapper for FINT collection responses. |
-| `EntityConfiguration` | Binds entity pipeline configuration from `fint.kontroll.resource-gateway.resources.entity`. |
-| `EntityPipelineFactory` | Converts configured resource references into FINT endpoints, Kafka topic parameters, and key filters. |
-| `EntityPublishingComponent` | Schedules pulls, creates Kafka topics, extracts keys, and publishes entity resources to Kafka. |
+| Component | Responsibility                                                                                                      |
+| --- |---------------------------------------------------------------------------------------------------------------------|
+| `OAuthRestClientConfiguration` | Creates a `RestClient` for FINT api when `fint.kontroll.datainput=fint`. Optionally attaches an OAuth2 interceptor. |
+| `NoOAuthWebClientConfiguration` | Creates a plain `RestClient` for mock/local access when `fint.kontroll.datainput=mock`.                             |
+| `FintClient` | Wraps FINT HTTP calls and tracks `sinceTimeStamp` per endpoint.                                                     |
+| `ObjectResources` | Generic deserialization wrapper for FINT collection responses.                                                      |
+| `EntityConfiguration` | Binds entity pipeline configuration from `fint.kontroll.resource-gateway.resources.entity`.                         |
+| `EntityPipelineFactory` | Converts configured resource references into FINT endpoints, Kafka topic parameters, and key filters.               |
+| `EntityPublishingComponent` | Schedules pulls, creates Kafka topics, extracts keys, and publishes entity resources to Kafka.                      |
 
 ## Startup Flow
 
@@ -136,7 +135,7 @@ flowchart TD
 
 For each configured resource reference:
 
-1. The Kafka resource name is derived from `resource-reference`, with `.` and spaces replaced by `-`, then lowercased.
+1. The Kafka topic name is derived from `resource-reference`, with `.` and spaces replaced by `-`, then lowercased.
 2. The FINT endpoint defaults to `/<resource-reference with dots replaced by slashes>`.
 3. The key filter defaults to `systemid` unless `self-link-key-filter` is configured.
 4. The Kafka topic is created or updated with one partition, last-value retention, seven-day null-value retention, and normal cleanup frequency.
@@ -202,15 +201,6 @@ If no matching self link exists, publishing fails for that resource with an `Ill
 | Kafka defaults | `novari.kafka`, `spring.kafka` | Topic prefixing, application ID, group ID, producer settings. |
 | Local staging | `application-local-staging.yaml` | Uses mock data input and local base URL. |
 
-## Local Staging Behavior
-
-With `spring.profiles.active=local-staging`:
-
-1. `fint.kontroll.datainput=mock` activates `NoOAuthWebClientConfiguration`.
-2. `fint.client.base-url` points to the local mock API, currently `http://localhost:3000`.
-3. Entity publishing is enabled.
-4. Kafka authorization is disabled in local configuration.
-5. The service starts on port `8089`.
 
 ## Operational Notes
 
@@ -223,4 +213,3 @@ The project currently relies on these external systems when the corresponding fe
 | FINT API or local mock API | Source for resource data. |
 | FINT IdP | OAuth token provider in real FINT mode with authorization enabled. |
 | Kafka | Destination for published entity resources. |
-| OPA | Access-management URL is configured, although the entity publishing flow shown here does not call it directly. |

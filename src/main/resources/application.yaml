@@ -1,6 +1,8 @@
 fint:
   org-id: fintlabs.no
   application-id: fint-kontroll-fint-gateway
+  client:
+      base-url: "http://localhost:3000"
   kontroll:
       datainput: mock #fint
       resource-gateway:
