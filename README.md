@@ -14,15 +14,17 @@ The application is a Spring Boot service written in Kotlin. Its main runtime res
 
 ## Main Components
 
-| Component | Responsibility                                                                                                      |
-| --- |---------------------------------------------------------------------------------------------------------------------|
+| Component | Responsibility |
+| --- | --- |
 | `OAuthRestClientConfiguration` | Creates a `RestClient` for FINT api when `fint.kontroll.datainput=fint`. Optionally attaches an OAuth2 interceptor. |
-| `NoOAuthWebClientConfiguration` | Creates a plain `RestClient` for mock/local access when `fint.kontroll.datainput=mock`.                             |
-| `FintClient` | Wraps FINT HTTP calls and tracks `sinceTimeStamp` per endpoint.                                                     |
-| `ObjectResources` | Generic deserialization wrapper for FINT collection responses.                                                      |
-| `EntityConfiguration` | Binds entity pipeline configuration from `fint.kontroll.resource-gateway.resources.entity`.                         |
-| `EntityPipelineFactory` | Converts configured resource references into FINT endpoints, Kafka topic parameters, and key filters.               |
-| `EntityPublishingComponent` | Schedules pulls, creates Kafka topics, extracts keys, and publishes entity resources to Kafka.                      |
+| `NoOAuthWebClientConfiguration` | Creates a plain `RestClient` for mock/local access when `fint.kontroll.datainput=mock`. |
+| `FintClient` | Wraps FINT HTTP calls and tracks `sinceTimeStamp` per endpoint. |
+| `ObjectResources` | Generic deserialization wrapper for FINT collection responses. |
+| `EntityConfiguration` | Binds entity pipeline configuration from `fint.kontroll.resource-gateway.resources.entity`. |
+| `EntityPipelineFactory` | Converts configured resource references into FINT endpoints, Kafka topic parameters, and key filters. |
+| `EntityPublishingComponent` | Schedules pulls, creates Kafka topics, retrieves changed resources, and delegates publishing. |
+| `EntityResourcePublishingService` | Builds Kafka producer records and sends entity resources to Kafka. |
+| `EntityResourceKeyExtractor` | Extracts stable Kafka message keys from FINT resource self links. |
 
 ## Startup Flow
 
@@ -52,6 +54,8 @@ flowchart TD
     L --> N[Bind EntityConfiguration]
     N --> O[Create EntityPipeline list]
     O --> P[Create or update Kafka entity topics]
+    L --> Q[Inject EntityResourcePublishingService]
+    Q --> R[Inject EntityResourceKeyExtractor]
 ```
 
 ## FINT Client Authentication Flow
@@ -115,7 +119,7 @@ fint:
           enabled: true
 ```
 
-When enabled, `EntityPublishingComponent` builds one pipeline per configured `entity-pipelines` entry.
+When enabled, `EntityPublishingComponent` builds one pipeline per configured `entity-pipelines` entry. The component owns scheduling, topic setup, and FINT pulling. Publishing and key extraction are delegated to smaller services.
 
 ```mermaid
 flowchart TD
@@ -128,9 +132,12 @@ flowchart TD
 
     H[Scheduled pull] --> I[Loop through pipelines]
     I --> J[FintClient pulls changed resources]
-    J --> K[Extract key from _links.self href]
-    K --> L[Publish resource with ParameterizedTemplate]
-    L --> M[Kafka entity topic]
+    J --> K[EntityPublishingComponent delegates resources]
+    K --> L[EntityResourcePublishingService]
+    L --> M[EntityResourceKeyExtractor extracts key]
+    M --> N[Build ParameterizedProducerRecord]
+    N --> O[Publish with ParameterizedTemplate]
+    O --> P[Kafka entity topic]
 ```
 
 For each configured resource reference:
@@ -179,7 +186,7 @@ If a pull fails with `RestClientException`, the component logs the error and ret
 
 ## Kafka Message Key Extraction
 
-The message key is extracted from the resource body:
+`EntityResourceKeyExtractor` extracts the message key from the resource body:
 
 1. Read `resource["_links"]`.
 2. Read the list at `_links.self`.
@@ -188,7 +195,19 @@ The message key is extracted from the resource body:
 5. Keep links containing the configured `self-link-key-filter`.
 6. Use the lexicographically smallest matching link.
 
-If no matching self link exists, publishing fails for that resource with an `IllegalStateException`.
+If no matching self link exists, `EntityResourceKeyExtractor` throws an `IllegalStateException`, and publishing fails for that resource.
+
+## Kafka Publishing
+
+`EntityResourcePublishingService` receives an `EntityPipeline` and the resources pulled for that pipeline. For every resource it:
+
+1. Calls `EntityResourceKeyExtractor` with the resource and the pipeline `selfLinkKeyFilter`.
+2. Builds a `ParameterizedProducerRecord` with the pipeline topic parameters.
+3. Sets the extracted key as the Kafka message key.
+4. Uses the original resource as the Kafka message value.
+5. Sends the record through `ParameterizedTemplate<Any>`.
+
+This keeps `EntityPublishingComponent` focused on orchestration and makes key extraction and record publishing independently unit-testable.
 
 ## Configuration Summary
 

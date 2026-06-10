@@ -4,10 +4,10 @@ import no.novari.kafka.producing.ParameterizedProducerRecord
 import no.novari.kafka.producing.ParameterizedTemplate
 import no.novari.kafka.producing.ParameterizedTemplateFactory
 import no.novari.kontroll.fint.gateway.entity.EntityPipeline
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
-class EntityResourcePublisher(
+@Service
+class EntityResourcePublishingService(
     parameterizedTemplateFactory: ParameterizedTemplateFactory,
     private val entityResourceKeyExtractor: EntityResourceKeyExtractor,
 ) {

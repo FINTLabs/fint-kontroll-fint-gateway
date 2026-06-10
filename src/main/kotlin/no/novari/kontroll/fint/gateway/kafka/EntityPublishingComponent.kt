@@ -25,7 +25,7 @@ class EntityPublishingComponent(
     entityTopicService: EntityTopicService,
     entityConfiguration: EntityConfiguration,
     entityPipelineFactory: EntityPipelineFactory,
-    private val entityResourcePublisher: EntityResourcePublisher,
+    private val entityResourcePublishingService: EntityResourcePublishingService,
     private val fintClient: FintClient,
 ) {
     private val entityPipelines: List<EntityPipeline> =
@@ -73,7 +73,7 @@ class EntityPublishingComponent(
     fun pullUpdatedEntityResources(entityPipeline: EntityPipeline) {
         val resources = getUpdatedResources(entityPipeline.fintEndpoint)
 
-        entityResourcePublisher.publish(entityPipeline, resources)
+        entityResourcePublishingService.publish(entityPipeline, resources)
 
         log.info(
             "${resources.size} entities sent to ${entityPipeline.topicNameParameters.resourceName}",
