@@ -6,7 +6,7 @@ import no.novari.kafka.producing.ParameterizedTemplateFactory
 import no.novari.kafka.topic.EntityTopicService
 import no.novari.kafka.topic.configuration.EntityCleanupFrequency
 import no.novari.kafka.topic.configuration.EntityTopicConfiguration
-import no.novari.kontroll.fint.gateway.FintClient
+import no.novari.kontroll.fint.gateway.authorization.FintClient
 import no.novari.kontroll.fint.gateway.entity.EntityConfiguration
 import no.novari.kontroll.fint.gateway.entity.EntityPipeline
 import no.novari.kontroll.fint.gateway.entity.EntityPipelineConfiguration

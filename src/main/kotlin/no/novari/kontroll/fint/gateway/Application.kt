@@ -1,4 +1,4 @@
-package no.novari.no.novari.kontroll.fint.gateway
+package no.novari.kontroll.fint.gateway
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan

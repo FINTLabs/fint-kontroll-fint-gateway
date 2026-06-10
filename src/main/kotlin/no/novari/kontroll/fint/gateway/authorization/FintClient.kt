@@ -1,5 +1,6 @@
-package no.novari.kontroll.fint.gateway
+package no.novari.kontroll.fint.gateway.authorization
 
+import no.novari.kontroll.fint.gateway.entity.FintObjectResources
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
@@ -17,7 +18,7 @@ class FintClient(
         sinceTimestamp.clear()
     }
 
-    private fun getLastUpdated(endpoint: String): ObjectResources {
+    private fun getLastUpdated(endpoint: String): FintObjectResources {
         val lastUpdated =
             restClient
                 .get()
@@ -25,7 +26,7 @@ class FintClient(
                 .retrieve()
                 .body<LastUpdated>()
 
-        val objectResources =
+        val fintObjectResources =
             restClient
                 .get()
                 .uri { uriBuilder ->
@@ -34,11 +35,11 @@ class FintClient(
                         .queryParam("sinceTimeStamp", sinceTimestamp.getOrDefault(endpoint, 0L))
                         .build()
                 }.retrieve()
-                .body<ObjectResources>()
+                .body<FintObjectResources>()
 
         sinceTimestamp[endpoint] = lastUpdated!!.lastUpdated
 
-        return objectResources!!
+        return fintObjectResources!!
     }
 
     fun getResource(endpoint: String): Any? =

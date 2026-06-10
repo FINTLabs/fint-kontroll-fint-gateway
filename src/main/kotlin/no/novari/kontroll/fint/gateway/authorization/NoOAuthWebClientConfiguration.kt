@@ -1,4 +1,4 @@
-package no.novari.no.novari.kontroll.fint.gateway
+package no.novari.kontroll.fint.gateway
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
