@@ -20,7 +20,7 @@ patches:
         value: "fridiks.no"
     target:
       kind: FintClient
-      name: kontroll-fint-gw
+      name: kontroll-resource-gw
   - patch: |-
       - op: replace
         path: "/spec/orgId"

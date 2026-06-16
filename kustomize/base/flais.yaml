@@ -20,7 +20,7 @@ spec:
       value: "No 4 - orgid with - and not ."
   envFrom:
     - secretRef:
-        name: kontroll-fint-gw
+        name: kontroll-resource-gw
   kafka:
     enabled: true
     acls:

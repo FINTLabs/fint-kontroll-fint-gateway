@@ -19,7 +19,7 @@ patches:
         value: "afk.no"
     target:
       kind: FintClient
-      name: kontroll-fint-gw
+      name: kontroll-resource-gw
   - patch: |-
       - op: add
         path: "/spec/resources"

@@ -1,7 +1,7 @@
 apiVersion: fintlabs.no/v1alpha1
 kind: FintClient
 metadata:
-  name: kontroll-fint-gw
+  name: kontroll-resource-gw
 
 spec:
   orgId: fylke.no
