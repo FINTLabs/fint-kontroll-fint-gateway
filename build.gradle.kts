@@ -34,7 +34,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     // implementation("io.github.oshai:kotlin-logging-jvm:7.0.13")
     // implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
 
     implementation("no.novari:kafka:6.0.0")
     implementation("no.novari:flyt-cache:2.0.1")
